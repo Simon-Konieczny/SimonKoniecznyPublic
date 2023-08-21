@@ -1,2 +1,2 @@
 # SimonKoniecznyPublic
-Collection of Projects by Simon Konieczny
+A Collection of Projects by Simon Konieczny

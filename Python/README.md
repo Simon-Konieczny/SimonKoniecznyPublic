@@ -1,0 +1,1 @@
+Collection of various linked datatypes in Python

@@ -5,7 +5,8 @@ import openai
 r = sr.Recognizer()
 
 #chatGPT setup
-openai.api_key = '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'
+#store api key in file so that it is unobtainable from the source code
+openai.api_key = ''
 messages = [{"role":"system","conext":"You are a snarky intelligent assistant"}]
 
 def speak_text(message):

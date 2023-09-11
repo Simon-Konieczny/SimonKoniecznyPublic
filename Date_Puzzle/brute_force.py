@@ -103,8 +103,10 @@ sixth = Shape([[1, 1, 1],
 seventh = Shape([[0, 1, 0, 0],
                  [1, 1, 1, 1]
                  ])
-
-shapes = [first, second, third, fourth, fifth, sixth, seventh]
+eighth = Shape([[1,1,1],
+                [1,1,0]
+                ])
+shapes = [first, second, third, fourth, fifth, sixth, seventh,eighth]
 
 n = 1
 for shape in shapes:
@@ -112,6 +114,17 @@ for shape in shapes:
     n += 1
 
 def is_valid_placement(board, shape, x, y):
+    """Checks if given shape can be placed
+
+    Args:
+        board (Board): object storing the current puzzle board
+        shape (Shape): object storing shape layout
+        x (int): position
+        y (int): position
+
+    Returns:
+        Bool: True if shape can be placed, False otherwise
+    """
     for i in range(shape.get_height()):
         for j in range(shape.get_width()):
             if (
@@ -128,12 +141,30 @@ def is_valid_placement(board, shape, x, y):
     return True
 
 def place_shape(board, shape, x, y,n):
+    """Places shape on voard
+
+    Args:
+        board (Board): object storing puzzle boars
+        shape (Shape): object storing shape layout
+        x (int): position
+        y (int): position
+        n (int): value to place
+    """
     for i in range(shape.get_height()):
         for j in range(shape.get_width()):
             if shape.shape[i][j] == 1:
                 board.board[x + i][y + j] = n
 
 def get_random_shape(my_dict, temp_used):
+    """Returns random shape from those not in temp_used
+
+    Args:
+        my_dict (dictionary): stores all shapes and their rotations
+        temp_used (list): stores shapes already tried in given cell
+
+    Returns:
+        Shape: random shape
+    """
     random_shape = random.choice(list(my_dict.keys()))
     while random_shape in temp_used:
         random_shape = random.choice(list(my_dict.keys()))
@@ -141,38 +172,64 @@ def get_random_shape(my_dict, temp_used):
     return random_shape
 
 def get_all_rotation(my_dict,used_shapes):
+    """Returns all rotations that should be tried
+
+    Args:
+        my_dict (dictionary): stores all rotations in format my_dict[shape] = [rotation1,rotation2,...]
+        used_shapes (list): stores all previously placed shapes
+
+    Returns:
+        list(shape,rotation): contains all rotations left to try
+    """
     ans =[]
-    n = len(my_dict.keys())
+    n = len(my_dict.keys())-len(used_shapes)
     temp_used = copy.deepcopy(used_shapes)
     for _ in range(n):
         shape = get_random_shape(my_dict,temp_used)
         temp_used.append(shape)
         for rotation in my_dict[shape]:
-            ans.append(rotation)
+            ans.append((shape,rotation))
     
     return ans
 
-def store_rotation_place(rotation, row, col, used_rotations):
-    used_rotations[rotation] = [row, col]
-
 def all_cells_not_0(board):
+    """Checks if the entire board is filled
+
+    Args:
+        board (Board): stores the puzzle board
+
+    Returns:
+        Bool: True if entire board filled, False otherwise
+    """
     for rows in range(board.get_height()):
         for cols in range(board.get_width()):
             if board.board[rows][cols] == 0:
                 return False
     return True
 
+#declaring what date should be solved
 my_board.board[1][2] = '.'
 my_board.board[3][3] = '.'
-working_dict = copy.deepcopy(all_shapes)
-working_board = Board(copy.deepcopy(my_board.board))
-working_used_rotations = {}
 
 def master(my_dict,board, used_shapes,default,n):
+    """Places a random shape/rotation in the first free cell on the board, if none possible restarts the puzzle
+
+    Args:
+        my_dict (dictionary): stores all shapes and their rotations
+        board (Board): object storing puzzle board
+        used_shapes (list): stores shapes previously placed on board
+        default (2d_array): array that stores the default puzzle board layout
+        n (int): value to keep track of the shape placed on board
+
+    Returns:
+        Bool: True once entire board is filled, otherwise returns variables for next iteration
+    """
+    print(used_shapes)
     for rows in range(board.get_height()):
         for cols in range(board.get_width()): 
             if board.board[rows][cols] == 0:
-                for rotation in get_all_rotation(my_dict,used_shapes):
+                for shape,rotation in get_all_rotation(my_dict,used_shapes):
+                    print('h')
                     if is_valid_placement(board, rotation, rows, cols):
                         place_shape(board, rotation, rows, cols,n)
                         n+=1
@@ -181,14 +238,13 @@ def master(my_dict,board, used_shapes,default,n):
                 return Board(copy.deepcopy(default)),[],1
     return True
 
-b = Board(copy.deepcopy(layout))
+working_dict = copy.deepcopy(all_shapes)
+b = Board(copy.deepcopy(my_board.board))
 working_used_shapes = []
 n=1
 while not all_cells_not_0(b):
-    #print('h1')
     b_old = Board(copy.deepcopy(b.board))
     used_shapes_old = copy.deepcopy(working_used_shapes)
     b,working_used_shapes,n = master(working_dict, b, working_used_shapes, layout,n)
-    #print(b)
 
 print(b)

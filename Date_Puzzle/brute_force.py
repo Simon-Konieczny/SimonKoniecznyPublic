@@ -208,8 +208,10 @@ def all_cells_not_0(board):
     return True
 
 #declaring what date should be solved
-my_board.board[1][2] = '.'
-my_board.board[3][3] = '.'
+#month
+my_board.board[1][0] = '.'
+#day
+my_board.board[5][5] = '.'
 
 def master(my_dict,board, used_shapes,default,n):
     """Places a random shape/rotation in the first free cell on the board, if none possible restarts the puzzle
@@ -224,12 +226,10 @@ def master(my_dict,board, used_shapes,default,n):
     Returns:
         Bool: True once entire board is filled, otherwise returns variables for next iteration
     """
-    print(used_shapes)
     for rows in range(board.get_height()):
         for cols in range(board.get_width()): 
             if board.board[rows][cols] == 0:
                 for shape,rotation in get_all_rotation(my_dict,used_shapes):
-                    print('h')
                     if is_valid_placement(board, rotation, rows, cols):
                         place_shape(board, rotation, rows, cols,n)
                         n+=1
@@ -243,6 +243,7 @@ b = Board(copy.deepcopy(my_board.board))
 working_used_shapes = []
 n=1
 while not all_cells_not_0(b):
+    print(b)
     b_old = Board(copy.deepcopy(b.board))
     used_shapes_old = copy.deepcopy(working_used_shapes)
     b,working_used_shapes,n = master(working_dict, b, working_used_shapes, layout,n)
